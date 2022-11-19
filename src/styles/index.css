@@ -380,7 +380,7 @@ template {
   * {
     box-sizing: border-box;
   }
-  
+
   html,
   body,
   #__next {
@@ -390,3 +390,7 @@ template {
     padding: 0;
     overflow: hidden;
   }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
