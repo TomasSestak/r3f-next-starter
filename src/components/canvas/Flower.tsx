@@ -44,13 +44,12 @@ const Flower = ({ flowers, setFlowers }: FlowerState) => {
 
 	return (
 		<>
-			<PresentationControls>
-				<group scale={5}>
-					{scenes.map((value, index) => {
-						return <primitive object={value} key={index} position={[index / 20, 0, 0]} />;
-					})}
-				</group>
-			</PresentationControls>
+			<OrbitControls />
+			<group scale={5}>
+				{scenes.map((value, index) => {
+					return <primitive object={value} key={index} position={[index / 20, 0, 0]} />;
+				})}
+			</group>
 			<ambientLight />
 		</>
 	);
