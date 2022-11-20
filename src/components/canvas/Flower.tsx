@@ -1,13 +1,13 @@
-import { useFrame, useLoader, useThree } from '@react-three/fiber';
+import { ThreeEvent, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useDrag } from '@use-gesture/react';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { useSpring } from '@react-spring/three';
-import { OrbitControls, PresentationControls, TransformControls, Bounds } from '@react-three/drei';
+import { OrbitControls, PresentationControls, TransformControls, Bounds, Select, useSelect, PivotControls } from '@react-three/drei';
 
 import { animated } from '@react-spring/three';
-import { Group } from 'three';
+import { Group, Object3D } from 'three';
 
 const Single = (props) => {
 	const { scene } = useLoader(GLTFLoader, '/3d-models/poly.glb');
@@ -20,14 +20,7 @@ export interface FlowerState {
 }
 
 const Flower = ({ flowers, setFlowers }: FlowerState) => {
-	const { size, viewport } = useThree();
-	const aspect = size.width / viewport.width;
-	const [spring, set] = useSpring(() => ({ scale: [1, 1, 1], position: [0, 0, 0], rotation: [0, 0, 0], config: { friction: 10 } }));
-	const bind = useGesture({
-		onDrag: ({ offset: [x, y] }) => set({ position: [x / aspect, -y / aspect, 0], rotation: [y / aspect, x / aspect, 0] }),
-	});
-
-	const { scene } = useLoader(GLTFLoader, '/3d-models/flower.gltf');
+	const { scene, nodes, materials } = useLoader(GLTFLoader, '/3d-models/flower.gltf');
 
 	const [scenes, setScenes] = useState<Group[]>([]);
 
@@ -40,16 +33,31 @@ const Flower = ({ flowers, setFlowers }: FlowerState) => {
 		setScenes(newScenes);
 	}, [flowers, scene]);
 
-	console.log(scenes);
+	const [disabled, setDisabled] = useState(false);
+	const [selected, setSelected] = useState<Object3D[]>([]);
+	const active = selected[0];
 
 	return (
 		<>
-			<OrbitControls />
-			<group scale={5}>
+			<OrbitControls enableDamping={false} enablePan={false} enableZoom={true} enableRotate={true} enabled={!disabled} makeDefault />
+			{/*<Select box multiple onChange={console.log} filter={(items) => items}>*/}
+			{/*<PivotControls>*/}
+			{/*<group scale={1}>*/}
+			{/*<PresentationControls>*/}
+			{active && <TransformControls object={active} />}
+			<Select onChange={setSelected}>
 				{scenes.map((value, index) => {
-					return <primitive object={value} key={index} position={[index / 20, 0, 0]} />;
+					return (
+						<group key={index}>
+							<primitive scale={10} object={value.children[2]} position={[index * 0.1, index * 0.1, 0]} />
+						</group>
+					);
 				})}
-			</group>
+			</Select>
+			{/*</PresentationControls>*/}
+			{/*</group>*/}
+			{/*</PivotControls>*/}
+			{/*</Select>*/}
 			<ambientLight />
 		</>
 	);
