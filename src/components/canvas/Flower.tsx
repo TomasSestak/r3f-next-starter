@@ -9,11 +9,6 @@ import { OrbitControls, PresentationControls, TransformControls, Bounds, Select,
 import { animated } from '@react-spring/three';
 import { Group, Object3D } from 'three';
 
-const Single = (props) => {
-	const { scene } = useLoader(GLTFLoader, '/3d-models/poly.glb');
-	return <primitive object={scene} {...props} />;
-};
-
 export interface FlowerState {
 	flowers: number;
 	setFlowers: Dispatch<SetStateAction<number>>;
@@ -37,6 +32,8 @@ const Flower = ({ flowers, setFlowers }: FlowerState) => {
 	const [selected, setSelected] = useState<Object3D[]>([]);
 	const active = selected[0];
 
+	console.log(selected);
+
 	return (
 		<>
 			<OrbitControls enableDamping={false} enablePan={false} enableZoom={true} enableRotate={true} enabled={!disabled} makeDefault />
@@ -44,13 +41,13 @@ const Flower = ({ flowers, setFlowers }: FlowerState) => {
 			{/*<PivotControls>*/}
 			{/*<group scale={1}>*/}
 			{/*<PresentationControls>*/}
-			{active && <TransformControls object={active} />}
+			{/*{active && <TransformControls object={active} />}*/}
 			<Select onChange={setSelected}>
 				{scenes.map((value, index) => {
 					return (
-						<group key={index}>
-							<primitive scale={10} object={value.children[2]} position={[index * 0.1, index * 0.1, 0]} />
-						</group>
+						<PivotControls onDragStart={() => setDisabled(true)} onDragEnd={() => setDisabled(false)} key={index}>
+							<primitive scale={10} object={value.children[2]} />
+						</PivotControls>
 					);
 				})}
 			</Select>
